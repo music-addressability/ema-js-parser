@@ -1,0 +1,32 @@
+{
+  "name": "@ema/parser",
+  "version": "0.0.1",
+  "description": "Generic EMA expression parser",
+  "main": "dist/EmaExp.js",
+  "scripts": {
+    "build": "tsc",
+    "test": "mocha -r ts-node/register tests/**/*.test.ts",
+    "coverage": "nyc -r lcov -e .ts -x \"*.test.ts\" npm run test"
+  },
+  "keywords": [
+    "EMA",
+    "music",
+    "addressability",
+    "music",
+    "encoding"
+  ],
+  "author": "Raff Viglianti",
+  "license": "Apache-2.0",
+  "types": "dist/EmaExp.d.ts",
+  "devDependencies": {
+    "@types/chai": "^4.2.11",
+    "@types/mocha": "^7.0.2",
+    "chai": "^4.2.0",
+    "mocha": "^8.0.1",
+    "nyc": "^15.1.0",
+    "ts-node": "^8.10.2",
+    "tslint": "^6.1.2",
+    "tslint-config-standard": "^9.0.0",
+    "typescript": "^3.9.6"
+  }
+}

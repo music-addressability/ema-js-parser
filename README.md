@@ -1,18 +1,17 @@
 # EMA JS Parser
 
-A Generic parser for Enhancing Music Notation Addrssability (EMA) expressions ([read the API specification here](https://github.com/music-addressability/ema/blob/master/docs/api.md))
+A Generic parser for Enhancing Music Notation Addressability (EMA) expressions ([read the API specification here](https://github.com/music-addressability/ema/blob/master/docs/api.md))
 
 This parser is format agnostic, but requires some information about the document to which the EMA expression applies. These data must be structured according to the information request [documented in the API](https://github.com/music-addressability/ema/blob/master/docs/api.md#request-information-on-music-notation-document). For example:
 
 ```json
-{ 
+{
   "measures": 4,
   "staves": {"0" : ["Soprano", "Alto", "Tenor", "Bass"] },
-  }
 }
 ```
 
-Note that `measure_labels`, `beats`, and `completeness` can be omitted. Stave labels can also be blank, but must be listed:
+Note that `measure_labels`, `beats`, and `completeness` from the EMA spec can be omitted. Stave labels can also be blank, but must be listed:
 
 ```json
 "staves": {"0" : ["", "", "", ""] },
@@ -48,7 +47,7 @@ const docInfo = {
   beats : {0 : {'count': 6, 'unit': 8} }
 }
 
-// return an EmaExpr object containing an EmaSelection measure selection with futher selections in the object.
+// return an EmaExpr object containing an EmaSelection measure selection with further selections in the object.
 const exp = EmaExp.fromString(docInfo, '2-end/start-2/@all/cut')
 // return an EmaSelection object containing a staff selection
 const m = exp.selection.getMeasure(2)

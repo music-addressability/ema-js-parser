@@ -14,6 +14,9 @@ export default class EmaRange {
   public toArrayInt(total: number) : ReadonlyArray<number> {
     const start = this.start === 'start' || this.start === 'all' ? 1 : this.start as number
     const end = this.end === 'end' || this.end === 'all' ? total : this.end as number
+    if (start < 0 || end > total) {
+      throw Error('EMA Range out of bounds')
+    }
     return makeRange((end + 1) - start, start)
   }
 

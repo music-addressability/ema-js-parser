@@ -54,7 +54,6 @@ export default class EmaExp {
   }
 
   private getSelection(): EmaSelection {
-    // Converts an EmaExpression to EmaMeasure[].
     const selection = new EmaSelection([])
     const measuresByIndex = this._measureRanges.map(m => {
       return m.toArrayInt(this.docInfo.measures)
@@ -93,6 +92,7 @@ export default class EmaExp {
         }
         // Beats do not get expanded (identified)
         // because that's a job for the format-specific implementations
+        // HOLD ON: we have beats info as well!
         selectedStaves.add({
           emaIdx: requestedStaff,
           selection: this._beatRanges[m][s].map(b => b.partiallyResolveRangeTokens())

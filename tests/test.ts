@@ -7,17 +7,20 @@ import * as EmaBeatRange from '../src/EmaBeatRange'
 
 const docInfo = {
   measures: 4,
-  staves: {0 : ['Soprano', 'Alto', 'Tenor', 'Bass'] },
-  beats : {0 : {'count': 6, 'unit': 8} }
+  staves: {0: ['Soprano', 'Alto', 'Tenor', 'Bass'] },
+  beats: {0: {'count': 6, 'unit': 8} }
 }
 
 const docInfoComplex = {
-  measures: 4,
+  measures: 10,
   staves: {
-    0 : ['Soprano', 'Alto', 'Tenor', 'Bass'],
+    0: ['Soprano', 'Alto', 'Tenor', 'Bass'],
     5: ['Soprano', 'Alto', 'Tenor']
   },
-  beats : {0 : {'count': 6, 'unit': 8} }
+  beats : {
+    0: {'count': 6, 'unit': 8},
+    5: {'count': 4, 'unit': 4}
+  }
 }
 
 describe('EMA expression parser', () => {
@@ -99,5 +102,33 @@ describe('EMA expression parser', () => {
     expect(exp.selection.getMeasure(5)).to.be.undefined
   })
 
-  // TODO add tests for staff number changes with `docInfoComplex`
+  it('should reject a request for non-existing measure', () => {
+    expect(() => EmaExp.fromString(docInfo, '10/1-2/@all/cut')).to.throw(Error, 'EMA Range out of bounds')
+  })
+
+  it('should parse an expression with staff changes', () => {
+    // change at measure 6.
+    const exp = EmaExp.fromString(docInfoComplex, '1-8/all/@all')
+    // Get measure 1, staff 4, start of beat range
+    expect(exp.selection.getMeasure(1).getStaff(4)[0].start).equal(1)
+    // Get measure 7, staff 3, end of beat range
+    expect(exp.selection.getMeasure(7).getStaff(3)[0].end).equal('end')
+    // Get measure 7, staff 4 -> undefined
+    expect(exp.selection.getMeasure(7).getStaff(4)).to.be.undefined
+  })
+
+  it('should reject an expression that does not match staff changes', () => {
+    expect(() => EmaExp.fromString(docInfoComplex, '1-8/1-4/@all')).to.throw(Error, 'EMA Range out of bounds')
+  })
+
+  it('should parse an expression with staff changes', () => {
+    // change at measure 6.
+    const exp = EmaExp.fromString(docInfoComplex, '1-8/1-4,1-4,1-4,1-4,1-4,1-3,1-3,1-3/@all')
+    // Get measure 1, staff 4, start of beat range
+    expect(exp.selection.getMeasure(1).getStaff(4)[0].start).equal(1)
+    // Get measure 7, staff 3, end of beat range
+    expect(exp.selection.getMeasure(7).getStaff(3)[0].end).equal('end')
+    // Get measure 7, staff 4 -> undefined
+    expect(exp.selection.getMeasure(7).getStaff(4)).to.be.undefined
+  })
 })

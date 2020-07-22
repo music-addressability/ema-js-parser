@@ -7,11 +7,15 @@ This parser is format agnostic, but requires some information about the document
 ```json
 {
   "measures": 4,
-  "staves": {"0" : ["Soprano", "Alto", "Tenor", "Bass"] },
+  "staves": {"0": ["Soprano", "Alto", "Tenor", "Bass"] },
+  "beats": {"0": {
+    "count": 4,
+    "unit": 4
+  }}
 }
 ```
 
-Note that `measure_labels`, `beats`, and `completeness` from the EMA spec can be omitted. Stave labels can also be blank, but must be listed:
+Note that `measure_labels`, and `completeness` from the EMA spec can be omitted. Stave labels can also be blank, but must be listed:
 
 ```json
 "staves": {"0" : ["", "", "", ""] },
@@ -44,14 +48,14 @@ import * as EmaExp from '../src/EmaExp'
 const docInfo = {
   measures: 4,
   staves: {0 : ['Soprano', 'Alto', 'Tenor', 'Bass'] },
-  beats : {0 : {'count': 6, 'unit': 8} }
+  beats : {0 : {'count': 4, 'unit': 4} }
 }
 
 // return an EmaExpr object containing an EmaSelection measure selection with further selections in the object.
 const exp = EmaExp.fromString(docInfo, '2-end/start-2/@all/cut')
 // return an EmaSelection object containing a staff selection
 const m = exp.selection.getMeasure(2)
-// return an array of EmaBeatRage containing beat ranges
+// return an array of EmaBeatRange containing beat ranges
 const s = m.getStaff(1)
 // get start of beat range.
 s[0].start
@@ -63,6 +67,6 @@ Methods are chainable:
 exp.selection.getMeasure(2).getStaff(1)[0].start
 ```
 
-Beats do not get expanded (identified) because that's a job for the format-specific implementations.
+Beats are returned as a range with range tokens ('start', 'end', and 'all') resolved according to the beat counts provided in the document information JSON.
 
 See `tests/test.ts` for more examples.

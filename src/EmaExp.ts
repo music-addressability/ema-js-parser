@@ -56,9 +56,10 @@ export default class EmaExp {
   private getSelection(): EmaSelection {
     const selection = new EmaSelection([])
     const measuresByIndex = this._measureRanges.map(m => {
-      return m.toArrayInt(this.docInfo.measures)
+      return m.toArray(this.docInfo.measures)
     })
     const selectedMeasures = new Set(...measuresByIndex)
+    // Build measures
     Array.from(selectedMeasures).map((requestedMeasure, measureIdx) => {
       // Handle expression like 1-3/@all/... (staff expression mapping to multiple measures)
       // If there is only one staff specified, keep looking for staff data under the same measure
@@ -75,8 +76,9 @@ export default class EmaExp {
           }
           return count
         }, 0)
-        return s.toArrayInt(stavesCount)
+        return s.toArray(stavesCount)
       })
+      // Build staves
       const selectedStaves: EmaSelection = new EmaSelection([])
       const staves = Array.from(new Set(...stavesByIndex))
       staves.map((requestedStaff, staffIdx) => {
@@ -90,12 +92,18 @@ export default class EmaExp {
         if (this._beatRanges[m]) {
           s = 0
         }
-        // Beats do not get expanded (identified)
-        // because that's a job for the format-specific implementations
-        // HOLD ON: we have beats info as well!
+        // Resolve beats
+        // Pass the beat (time) data specific to the measure
+        const beatCount = Object.keys(this.docInfo.beats).reduce((count: number, changeAtMeasure) => {
+          const changeNum = parseInt(changeAtMeasure, 10)
+          if (requestedMeasure - 1 >= changeNum) {
+            count = this.docInfo.beats[changeNum].count
+          }
+          return count
+        }, 0)
         selectedStaves.add({
           emaIdx: requestedStaff,
-          selection: this._beatRanges[m][s].map(b => b.partiallyResolveRangeTokens())
+          selection: this._beatRanges[m][s].map(b => b.resolveRangeTokens(beatCount))
         })
       })
       selection.add({

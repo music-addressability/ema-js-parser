@@ -87,7 +87,7 @@ describe('EMA expression parser', () => {
     // Get measure 2, staff 1 -> undefined
     expect(exp.selection.getMeasure(2).getStaff(1)).to.be.undefined
     // Get measure 2, staff 3, end of only beat range
-    expect(exp.selection.getMeasure(2).getStaff(3)[0].end).equal('end')
+    expect(exp.selection.getMeasure(2).getStaff(3)[0].end).equal(7)
     // Get measure 3, staff 1, start of second beat range
     expect(exp.selection.getMeasure(3).getStaff(1)[1].end).equal(4)
   })
@@ -97,7 +97,7 @@ describe('EMA expression parser', () => {
     // Get measure 1, staff 1, start of beat range
     expect(exp.selection.getMeasure(1).getStaff(1)[0].start).equal(1)
     // Get measure 2, staff 1, end of beat range
-    expect(exp.selection.getMeasure(2).getStaff(1)[0].end).equal('end')
+    expect(exp.selection.getMeasure(2).getStaff(1)[0].end).equal(7)
     // Get measure 5 -> undefined
     expect(exp.selection.getMeasure(5)).to.be.undefined
   })
@@ -106,13 +106,15 @@ describe('EMA expression parser', () => {
     expect(() => EmaExp.fromString(docInfo, '10/1-2/@all/cut')).to.throw(Error, 'EMA Range out of bounds')
   })
 
-  it('should parse an expression with staff changes', () => {
+  it('should parse an expression with staff and beat changes', () => {
     // change at measure 6.
     const exp = EmaExp.fromString(docInfoComplex, '1-8/all/@all')
     // Get measure 1, staff 4, start of beat range
     expect(exp.selection.getMeasure(1).getStaff(4)[0].start).equal(1)
+    // Get measure 1, staff 4, end of beat range
+    expect(exp.selection.getMeasure(1).getStaff(4)[0].end).equal(7)
     // Get measure 7, staff 3, end of beat range
-    expect(exp.selection.getMeasure(7).getStaff(3)[0].end).equal('end')
+    expect(exp.selection.getMeasure(7).getStaff(3)[0].end).equal(5)
     // Get measure 7, staff 4 -> undefined
     expect(exp.selection.getMeasure(7).getStaff(4)).to.be.undefined
   })
@@ -121,13 +123,15 @@ describe('EMA expression parser', () => {
     expect(() => EmaExp.fromString(docInfoComplex, '1-8/1-4/@all')).to.throw(Error, 'EMA Range out of bounds')
   })
 
-  it('should parse an expression with staff changes', () => {
+  it('should parse an expression with staff and beat changes', () => {
     // change at measure 6.
     const exp = EmaExp.fromString(docInfoComplex, '1-8/1-4,1-4,1-4,1-4,1-4,1-3,1-3,1-3/@all')
     // Get measure 1, staff 4, start of beat range
     expect(exp.selection.getMeasure(1).getStaff(4)[0].start).equal(1)
+    // Get measure 1, staff 4, end of beat range
+    expect(exp.selection.getMeasure(1).getStaff(4)[0].end).equal(7)
     // Get measure 7, staff 3, end of beat range
-    expect(exp.selection.getMeasure(7).getStaff(3)[0].end).equal('end')
+    expect(exp.selection.getMeasure(7).getStaff(3)[0].end).equal(5)
     // Get measure 7, staff 4 -> undefined
     expect(exp.selection.getMeasure(7).getStaff(4)).to.be.undefined
   })

@@ -1,9 +1,11 @@
 // tslint:disable: no-unused-expression
 import { expect } from 'chai'
-import * as EmaExp from '../src/EmaExp'
-import * as EmaRange from '../src/EmaRange'
-import * as EmaStaffRange from '../src/EmaStaffRange'
-import * as EmaBeatRange from '../src/EmaBeatRange'
+import EmaExp from '../src/EmaExp'
+import EmaRange from '../src/EmaRange'
+import EmaStaffRange from '../src/EmaStaffRange'
+import EmaBeatRange from '../src/EmaBeatRange'
+import EmaRangeParser from '../src/EmaRangeParser'
+import EmaParser from '../src/EmaParser'
 
 const docInfo = {
   measures: 4,
@@ -25,35 +27,35 @@ const docInfoComplex = {
 
 describe('EMA expression parser', () => {
   it('should parse an EMA range from string', () => {
-    const range = EmaRange.fromString('1-2')
+    const range: EmaRange = EmaRangeParser.parseRange('1-2')
     expect(range.start).equal(1)
     expect(range.end).equal(2)
     expect(range.toString()).equal('[1 2]')
   })
 
   it('should parse an EMA Staff range from string (non-beat)', () => {
-    const range = EmaStaffRange.fromString('1-2')
+    const range: EmaStaffRange = EmaRangeParser.parseStaffRange('1-2')
     expect(range.start).equal(1)
     expect(range.end).equal(2)
     expect(range.toString()).equal('[1 2]')
   })
 
   it('should parse an EMA range from string (beat)', () => {
-    const range = EmaBeatRange.fromString('1.33-2.999')
+    const range: EmaBeatRange = EmaRangeParser.parseBeatRange('1.33-2.999')
     expect(range.start).equal(1.33)
     expect(range.end).equal(2.999)
     expect(range.toString()).equal('[1.33 2.999]')
   })
 
   it('should parse an EMA range from string (shorthand)', () => {
-    const range = EmaRange.fromString('start-end')
+    const range: EmaRange = EmaRangeParser.parseRange('start-end')
     expect(range.start).equal('start')
     expect(range.end).equal('end')
     expect(range.toString()).equal('[start end]')
   })
 
   it('should parse a simple expression', () => {
-    const exp = EmaExp.fromString(docInfo, '1/2/@3/cut')
+    const exp: EmaExp = EmaParser.fromString(docInfo, '1/2/@3/cut')
     expect(exp.measures).equal('1')
     expect(exp.staves).equal('2')
     expect(exp.beats).equal('@3')
@@ -61,7 +63,7 @@ describe('EMA expression parser', () => {
   })
 
   it('should parse a simple expression with shorthands', () => {
-    const exp = EmaExp.fromString(docInfo, '2-end/start-2/@all/cut')
+    const exp: EmaExp = EmaParser.fromString(docInfo, '2-end/start-2/@all/cut')
     expect(exp.measures).equal('2-end')
     expect(exp.staves).equal('start-2')
     expect(exp.beats).equal('@all')
@@ -69,7 +71,7 @@ describe('EMA expression parser', () => {
   })
 
   it('should parse an expression with ranges', () => {
-    const exp = EmaExp.fromString(docInfo, '1-3/1-2,2-3,1/@1-2+@1-2,@2-3+@2-3,@1-2@4/cut')
+    const exp: EmaExp = EmaParser.fromString(docInfo, '1-3/1-2,2-3,1/@1-2+@1-2,@2-3+@2-3,@1-2@4/cut')
     // Get measure 1, staff 1, start of only beat range
     expect(exp.selection.getMeasure(1).getStaff(1)[0].start).equal(1)
     // Get measure 2, staff 1 -> undefined
@@ -81,7 +83,7 @@ describe('EMA expression parser', () => {
   })
 
   it('should parse an expression with ranges and shorthands', () => {
-    const exp = EmaExp.fromString(docInfo, 'all/1-2,2-3,1,1/@1-2+@1-2,@2-end+@2-end,@1-2@4,@all/cut')
+    const exp: EmaExp = EmaParser.fromString(docInfo, 'all/1-2,2-3,1,1/@1-2+@1-2,@2-end+@2-end,@1-2@4,@all/cut')
     // Get measure 1, staff 1, start of only beat range
     expect(exp.selection.getMeasure(1).getStaff(1)[0].start).equal(1)
     // Get measure 2, staff 1 -> undefined
@@ -93,7 +95,7 @@ describe('EMA expression parser', () => {
   })
 
   it('should parse an expression with ranges, shorthands, and simplifications', () => {
-    const exp = EmaExp.fromString(docInfo, 'all/1-2/@all/cut')
+    const exp: EmaExp = EmaParser.fromString(docInfo, 'all/1-2/@all/cut')
     // Get measure 1, staff 1, start of beat range
     expect(exp.selection.getMeasure(1).getStaff(1)[0].start).equal(1)
     // Get measure 2, staff 1, end of beat range
@@ -103,12 +105,12 @@ describe('EMA expression parser', () => {
   })
 
   it('should reject a request for non-existing measure', () => {
-    expect(() => EmaExp.fromString(docInfo, '10/1-2/@all/cut')).to.throw(Error, 'EMA Range out of bounds')
+    expect(() => EmaParser.fromString(docInfo, '10/1-2/@all/cut')).to.throw(Error, 'EMA Range out of bounds')
   })
 
   it('should parse an expression with staff and beat changes', () => {
     // change at measure 6.
-    const exp = EmaExp.fromString(docInfoComplex, '1-8/all/@all')
+    const exp: EmaExp = EmaParser.fromString(docInfoComplex, '1-8/all/@all')
     // Get measure 1, staff 4, start of beat range
     expect(exp.selection.getMeasure(1).getStaff(4)[0].start).equal(1)
     // Get measure 1, staff 4, end of beat range
@@ -120,12 +122,12 @@ describe('EMA expression parser', () => {
   })
 
   it('should reject an expression that does not match staff changes', () => {
-    expect(() => EmaExp.fromString(docInfoComplex, '1-8/1-4/@all')).to.throw(Error, 'EMA Range out of bounds')
+    expect(() => EmaParser.fromString(docInfoComplex, '1-8/1-4/@all')).to.throw(Error, 'EMA Range out of bounds')
   })
 
   it('should parse an expression with staff and beat changes', () => {
     // change at measure 6.
-    const exp = EmaExp.fromString(docInfoComplex, '1-8/1-4,1-4,1-4,1-4,1-4,1-3,1-3,1-3/@all')
+    const exp: EmaExp = EmaParser.fromString(docInfoComplex, '1-8/1-4,1-4,1-4,1-4,1-4,1-3,1-3,1-3/@all')
     // Get measure 1, staff 4, start of beat range
     expect(exp.selection.getMeasure(1).getStaff(4)[0].start).equal(1)
     // Get measure 1, staff 4, end of beat range

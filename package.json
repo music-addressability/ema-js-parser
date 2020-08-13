@@ -2,7 +2,7 @@
   "name": "@ema/parser",
   "version": "0.0.1",
   "description": "Generic EMA expression parser",
-  "main": "dist/EmaExp.js",
+  "main": "dist/EmaParser.js",
   "scripts": {
     "build": "tsc",
     "test": "mocha -r ts-node/register tests/test.ts",

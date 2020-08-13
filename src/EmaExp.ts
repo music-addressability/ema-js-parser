@@ -1,7 +1,10 @@
-import * as EmaRange from './EmaRange'
-import * as EmaStaffRange from './EmaStaffRange'
-import * as EmaBeatRange from './EmaBeatRange'
+import EmaRange from './EmaRange'
+import EmaStaffRange from './EmaStaffRange'
+import EmaBeatRange from './EmaBeatRange'
 import EmaSelection from './EmaSelection'
+import EmaRangeParser from './EmaRangeParser'
+
+export type Completeness = 'raw' | 'signature' | 'nospace' | 'cut'
 
 export interface DocInfo {
   measures: number
@@ -29,9 +32,9 @@ export default class EmaExp {
   staves: string
   beats: string
   completeness: string
-  private _measureRanges: EmaRange.default[]
-  private _staffRanges: EmaStaffRange.default[][]
-  private _beatRanges: EmaBeatRange.default[][][]
+  private _measureRanges: EmaRange[]
+  private _staffRanges: EmaStaffRange[][]
+  private _beatRanges: EmaBeatRange[][][]
   selection: EmaSelection
 
   constructor(docInfo: DocInfo, measures: string, staves: string, beats: string, completeness?: string) {
@@ -41,13 +44,13 @@ export default class EmaExp {
     this.beats = beats
     this.completeness = completeness
 
-    this._measureRanges = measures.split(',').map(range => EmaRange.fromString(range))
+    this._measureRanges = measures.split(',').map(range => EmaRangeParser.parseRange(range))
     this._staffRanges = staves.split(',').map(mRange => {
-      return mRange.split('+').map(sRange => EmaStaffRange.fromString(sRange))
+      return mRange.split('+').map(sRange => EmaRangeParser.parseStaffRange(sRange))
     })
     this._beatRanges = beats.split(',').map(mRange => {
       return mRange.split('+').map(bRange => {
-        return bRange.split('@').slice(1).map(range => EmaBeatRange.fromString(range))
+        return bRange.split('@').slice(1).map(range => EmaRangeParser.parseBeatRange(range))
       })
     })
     this.selection = this.getSelection()
@@ -114,9 +117,4 @@ export default class EmaExp {
     return selection
   }
 
-}
-
-export function fromString(docInfo: DocInfo, selection: string) {
-  const [m, s, b, c]: string[] = selection.split('/')
-  return new EmaExp(docInfo, m, s, b, c)
 }

@@ -1,6 +1,6 @@
-import * as EmaRange from './EmaRange'
+import EmaRange from './EmaRange'
 
-export default class EmaBeatRange extends EmaRange.default {
+export default class EmaBeatRange extends EmaRange {
   // Converts range to a list of numbers, given beat information.
   public toArray(total: number) : ReadonlyArray<number> {
     const res = this.resolveRangeTokens(total)
@@ -22,23 +22,4 @@ export default class EmaBeatRange extends EmaRange.default {
     }
     return new EmaBeatRange(start, end)
   }
-}
-
-export function fromString(range: string) {
-  const x = range.split('-')
-  const start = EmaRange.parseEmaToken(x[0], true)
-  const end = EmaRange.parseEmaToken(x[x.length - 1], true)
-  // check that start/end shorthands make sense, if present
-  if (x.length > 1) {
-    if (start === 'end' && end !== 'end') {
-      throw new Error('Bad API request')
-    }
-    if (end === 'start' && start !== 'start') {
-      throw new Error('Bad API request')
-    }
-    if (start === 'all' && end === 'all') {
-      throw new Error('Bad API request')
-    }
-  }
-  return new EmaBeatRange(start, end)
 }

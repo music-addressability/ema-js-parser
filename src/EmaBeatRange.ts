@@ -12,6 +12,25 @@ export default class EmaBeatRange extends EmaRange {
     return range
   }
 
+  public static parseRange(range: string) {
+    const x = range.split('-')
+    const start = EmaRange.parseEmaToken(x[0], true)
+    const end = EmaRange.parseEmaToken(x[x.length - 1], true)
+    // check that start/end shorthands make sense, if present
+    if (x.length > 1) {
+      if (start === 'end' && end !== 'end') {
+        throw new Error('Bad API request')
+      }
+      if (end === 'start' && start !== 'start') {
+        throw new Error('Bad API request')
+      }
+      if (start === 'all' && end === 'all') {
+        throw new Error('Bad API request')
+      }
+    }
+    return new EmaBeatRange(start, end)
+  }
+
   public resolveRangeTokens(count: number) : EmaBeatRange {
     // beats extend beyond the total by one. E.g. 4.5 is a valid beat in 4/4
     const countExt = count + 1

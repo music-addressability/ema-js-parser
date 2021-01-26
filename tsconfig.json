@@ -5,7 +5,7 @@
     "alwaysStrict": true,
     "strictFunctionTypes": true,
     "module": "commonjs",
-    "target": "es2015",
+    "target": "es2019",
     "declaration": true,
     "outDir": "./dist"
   },

@@ -2,7 +2,6 @@ import EmaRange from './EmaRange'
 import EmaStaffRange from './EmaStaffRange'
 import EmaBeatRange from './EmaBeatRange'
 import EmaSelection from './EmaSelection'
-import EmaRangeParser from './EmaRangeParser'
 
 export type Completeness = 'raw' | 'signature' | 'nospace' | 'cut'
 
@@ -44,16 +43,21 @@ export default class EmaExp {
     this.beats = beats
     this.completeness = completeness
 
-    this._measureRanges = measures.split(',').map(range => EmaRangeParser.parseRange(range))
+    this._measureRanges = measures.split(',').map(range => EmaRange.parseRange(range))
     this._staffRanges = staves.split(',').map(mRange => {
-      return mRange.split('+').map(sRange => EmaRangeParser.parseStaffRange(sRange))
+      return mRange.split('+').map(sRange => EmaStaffRange.parseRange(sRange))
     })
     this._beatRanges = beats.split(',').map(mRange => {
       return mRange.split('+').map(bRange => {
-        return bRange.split('@').slice(1).map(range => EmaRangeParser.parseBeatRange(range))
+        return bRange.split('@').slice(1).map(range => EmaBeatRange.parseRange(range))
       })
     })
     this.selection = this.getSelection()
+  }
+
+  public static fromString(docInfo: DocInfo, selection: string): EmaExp {
+    const [m, s, b, c]: string[] = selection.split('/')
+    return new EmaExp(docInfo, m, s, b, c)
   }
 
   private getSelection(): EmaSelection {
@@ -61,9 +65,8 @@ export default class EmaExp {
     const measuresByIndex = this._measureRanges.map(m => {
       return m.toArray(this.docInfo.measures)
     })
-    const selectedMeasures = new Set(...measuresByIndex)
     // Build measures
-    Array.from(selectedMeasures).map((requestedMeasure, measureIdx) => {
+    measuresByIndex.flat().map((requestedMeasure, measureIdx) => {
       // Handle expression like 1-3/@all/... (staff expression mapping to multiple measures)
       // If there is only one staff specified, keep looking for staff data under the same measure
       let m = measureIdx
@@ -118,3 +121,4 @@ export default class EmaExp {
   }
 
 }
+

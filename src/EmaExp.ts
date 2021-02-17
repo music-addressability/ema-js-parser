@@ -18,10 +18,12 @@ export interface StavesInfo {
 }
 
 export interface BeatsInfo {
-  [key: number]: {
-    count: number
-    unit: number
-  }
+  [key: number]: BeatInfo
+}
+
+export interface BeatInfo {
+  count: number
+  unit: number
 }
 
 export default class EmaExp {
@@ -86,7 +88,8 @@ export default class EmaExp {
       })
       // Build staves
       const selectedStaves: EmaSelection = new EmaSelection([])
-      const staves = Array.from(new Set(...stavesByIndex))
+      const staves = Array.from(new Set(stavesByIndex.flat().sort()))
+
       staves.map((requestedStaff, staffIdx) => {
         // Handle expressions like 1,2/1+2,2+3/@1-2 and 1,2/1+2,2+3/@1-2,@all
         // (single beat expression mapping to multiple staves/measures)

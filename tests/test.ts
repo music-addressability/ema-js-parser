@@ -68,7 +68,20 @@ describe('EMA expression parser', () => {
     expect(exp.completeness).equal('cut')
   })
 
-  it('should parse an expression with ranges', () => {
+  it('should parse an expression with complex staff', () => {
+    const exp: EmaExp = EmaExp.fromString(docInfo, '1-3/2,1+3,3-4/@all')
+    // Get measure 1, staff 2 but not 1
+    expect(exp.selection.getMeasure(1).getStaff(1)).to.be.undefined
+    expect(exp.selection.getMeasure(1).getStaff(2)).exist
+    // Get measure 2, staff 1 and 3 but not 2
+    expect(exp.selection.getMeasure(2).getStaff(1)).exist
+    expect(exp.selection.getMeasure(2).getStaff(2)).to.be.undefined
+    expect(exp.selection.getMeasure(2).getStaff(3)).exist
+    // Get measure 3, staff 4
+    expect(exp.selection.getMeasure(3).getStaff(4)).exist
+  })
+
+  it('should parse an expression with complex beat ranges', () => {
     const exp: EmaExp = EmaExp.fromString(docInfo, '1-3/1-2,2-3,4/@1-2+@1-2,@2-3+@2-3,@1-2@4/cut')
     // Get measure 1, staff 1, start of only beat range
     expect(exp.selection.getMeasure(1).getStaff(1)[0].start).equal(1)

@@ -3,14 +3,14 @@ import EmaStaffRange from './EmaStaffRange'
 import EmaBeatRange from './EmaBeatRange'
 import EmaSelection from './EmaSelection'
 
-export type Completeness = 'raw' | 'signature' | 'nospace' | 'cut'
+export type Completeness = 'raw' | 'signature' | 'nospace' | 'cut' | 'highlight'
 
 export interface DocInfo {
   measures: number
   measure_labels?: string[]
   staves: StavesInfo
   beats: BeatsInfo
-  completeness?: 'raw' | 'signature' | 'nospace' | 'cut'
+  completeness?: Completeness
 }
 
 export interface StavesInfo {

@@ -98,7 +98,7 @@ export default class EmaExp {
         if (this._beatRanges.length === 1) {
           m = 0
         }
-        if (this._beatRanges[m]) {
+        if (this._beatRanges[m].length === 1) {
           s = 0
         }
         // Resolve beats

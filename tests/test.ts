@@ -158,4 +158,15 @@ describe('EMA expression parser', () => {
     // Get measure 7, staff 4 -> undefined
     expect(exp.selection.getMeasure(7).getStaff(4)).to.be.undefined
   })
+
+  it('should parse and expression with separate beats per staff', () => {
+    const exp: EmaExp = EmaExp.fromString(
+      {
+        measures: 10,
+        staves: {0: ['Soprano', 'Alto', 'Tenor', 'Bass'] },
+        beats: {0: {'count': 4, 'unit': 2} }
+      },
+      '1-6/1,1,1+3,1+3,3,3/@1-4,@1-3,@1-3+@1-4,@1-3+@1-3,@1-3,@1')
+    expect(exp.selection.getMeasure(3).getStaff(3)[0].end).equal(4)
+  })
 })

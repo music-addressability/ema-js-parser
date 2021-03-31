@@ -68,6 +68,22 @@ describe('EMA expression parser', () => {
     expect(exp.completeness).equal('cut')
   })
 
+  it('should parse an expression with too many slashes', () => {
+    const exp: EmaExp = EmaExp.fromString(docInfo, '2-end//start-2///////@all/cut')
+    expect(exp.measures).equal('2-end')
+    expect(exp.staves).equal('start-2')
+    expect(exp.beats).equal('@all')
+    expect(exp.completeness).equal('cut')
+  })
+
+  it('should parse an expression with trailing slashes', () => {
+    const exp: EmaExp = EmaExp.fromString(docInfo, '/2-end//start-2/@all/cut')
+    expect(exp.measures).equal('2-end')
+    expect(exp.staves).equal('start-2')
+    expect(exp.beats).equal('@all')
+    expect(exp.completeness).equal('cut')
+  })
+
   it('should parse an expression with complex staff', () => {
     const exp: EmaExp = EmaExp.fromString(docInfo, '1-3/2,1+3,3-4/@all')
     // Get measure 1, staff 2 but not 1

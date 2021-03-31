@@ -58,7 +58,10 @@ export default class EmaExp {
   }
 
   public static fromString(docInfo: DocInfo, selection: string): EmaExp {
-    const [m, s, b, c]: string[] = selection.split('/')
+    // Normalize slashes
+    let normalizedSelection = selection.replace(/^\/+/, '')
+    normalizedSelection = normalizedSelection.replace(/\/{2,}/g, '/')
+    const [m, s, b, c]: string[] = normalizedSelection.split('/')
     return new EmaExp(docInfo, m, s, b, c)
   }
 

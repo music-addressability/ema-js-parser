@@ -1,6 +1,6 @@
 {
-  "name": "@ema/parser",
-  "version": "0.0.1",
+  "name": "@emajs/parser",
+  "version": "1.0.0",
   "description": "Generic EMA expression parser",
   "main": "dist/EmaExp.js",
   "scripts": {
@@ -28,5 +28,6 @@
     "tslint": "^6.1.2",
     "tslint-config-standard": "^9.0.0",
     "typescript": "^3.9.6"
-  }
+  },
+  "dependencies": {}
 }
